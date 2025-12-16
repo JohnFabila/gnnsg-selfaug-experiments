@@ -1,0 +1,28 @@
+\subsection{Head+Tail Bidirectional Self-Augmentation}
+
+To further improve the self-augmentation strategy, we explored a bidirectional approach that adds edges from both the query head and tail:
+
+\begin{itemize}
+    \item \textbf{Head augmentation:} For query $(h, ?, t)$, find all 2-hop paths from head: $h \rightarrow b \rightarrow c$, and add predicted edges $(h, c)$ with confidence $\geq 0.7$.
+    
+    \item \textbf{Tail augmentation:} Find all 2-hop paths \emph{to} the tail: $z \rightarrow a \rightarrow t$, and add predicted edges from head to these candidates: $(h, z)$ with confidence $\geq 0.8$.
+    
+    \item \textbf{Rationale:} This creates shortcuts from the head toward nodes that can reach the tail in 2 hops, potentially providing better path coverage for longer queries.
+\end{itemize}
+
+\textbf{Results:} We evaluated the head+tail approach on path lengths $k \in \{5, 6, 7\}$ with background knowledge $b \in \{1, 2, 3, 4\}$ (12 configurations). As shown in Figure~\ref{fig:selfaug_all_approaches}, the head+tail method shows:
+
+\begin{itemize}
+    \item \textbf{k=5:} Slight degradation ($-0.1\%$ to $-0.9\%$) compared to head-only approach
+    \item \textbf{k=6:} Neutral to marginal improvement ($0\%$ to $+0.6\%$)
+    \item \textbf{k=7:} Moderate improvement ($+2.1\%$ to $+6.0\%$), but still underperforms head-only
+\end{itemize}
+
+The head+tail approach adds significantly more edges per query (4--16 edges vs. 2--8 for head-only), requiring a higher confidence threshold (0.8 vs. 0.7) to maintain quality. However, it does not consistently outperform the simpler head-only strategy, which achieves an average improvement of $+10.15\%$ across all 24 test configurations. We conclude that the head-only augmentation with confidence threshold 0.7 provides the best trade-off between simplicity and performance.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{results/SelfAug_Short_EPIGNN/SelfAug_All_Approaches_k2-7.pdf}
+    \caption{Comparison of self-augmentation strategies on RCC8 dataset. The head-only approach (red triangles, confidence=0.7) consistently outperforms the head+tail bidirectional approach (orange squares, confidence=0.8) across most configurations. Both methods significantly improve over the Short EPIGNN baseline (blue circles) for long paths ($k \geq 5$).}
+    \label{fig:selfaug_all_approaches}
+\end{figure}

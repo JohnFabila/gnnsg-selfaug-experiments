@@ -1,0 +1,138 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
+\geometry{a4paper, margin=1in}
+
+\title{Proposal: Static 2-Hop Augmentation for EpiGNN}
+\author{Technical Specification for Review}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This document proposes a specific enhancement to the EpiGNN / NBFNet architecture called \textbf{"Static 2-Hop Augmentation"}. 
+The goal is to approximate the powerful "All-Pairs" reasoning capability (where any two inferred paths can be composed) using a computationally efficient "Graph Rewiring" strategy.
+
+\section{Motivation: The "Linear Reach" Bottleneck}
+
+\subsection{The Problem}
+The standard EpiGNN uses a composition function $\phi(\mathbf{h}, \mathbf{r})$ where:
+\begin{itemize}
+    \item $\mathbf{h}$ is a learned hidden state (representing a path from Source).
+    \item $\mathbf{r}$ is a \textbf{static edge relation} (from the input graph).
+\end{itemize}
+\[ \mathbf{h}^{(l+1)} = \phi(\mathbf{h}^{(l)}, \mathbf{r}_{\text{static}}) \]
+This imposes a strict constraint: \textbf{The model can only extend a path by exactly one physical hop per layer.}
+To reason about a relationship between nodes that are $K$ hops apart, the model \textit{must} have at least $K$ layers. This leads to vanishing gradients and "over-smoothing" for long reasoning chains (e.g., $K=15$).
+
+\subsection{The Desired State (All-Pairs Logic)}
+Ideally, we want the model to "stitch" two learned paths together:
+\[ \mathbf{h}_{AC} = \phi(\mathbf{h}_{AB}, \mathbf{h}_{BC}) \]
+If the model could do this, it could combine a 2-hop path $A \to B$ and a 2-hop path $B \to C$ to find a 4-hop connection in a single step. However, implementing this dynamically is $O(N^3)$ and difficult to integrate into sparse GNN frameworks.
+
+\section{The Proposed Solution: Static Augmentation}
+
+\subsection{Core Concept}
+We propose to \textbf{pre-compute} all pairs of nodes $(u, v)$ that are connected by a path of length 2 in the Graph of Facts. We then add a \textbf{Virtual Edge} between them.
+
+\begin{itemize}
+    \item \textbf{Original Graph of Facts:} $\mathcal{F} = (V, E, R)$
+    \item \textbf{Augmented Graph:} $\mathcal{F}' = (V, E \cup E', R \cup \{r_{virt}\})$
+    \item \textbf{Virtual Edges:} $E' = \{ (u, v) \mid \exists k, (u, k) \in E \land (k, v) \in E \}$
+    \item \textbf{Virtual Relation:} All edges in $E'$ are assigned a new, learnable relation ID $r_{virt}$.
+\end{itemize}
+
+\subsection{Why this works}
+By adding these edges, we allow the standard EpiGNN kernel to perform the following operation in Layer $L$:
+\[ \mathbf{h}^{(L)}_{v} = \phi(\mathbf{h}^{(L-1)}_{u}, \mathbf{r}_{virt}) \]
+Since $\mathbf{r}_{virt}$ represents a 2-hop step, the model is effectively computing:
+\[ \text{Path}(u, v) = \text{Path}(Source, u) \circ (\text{2-Hop Jump}) \]
+This allows the model to traverse the graph twice as fast (or "skip" over intermediate nodes), approximating the "Stitching" behavior without changing the model code.
+
+\section{Experimental Context: RCC-8}
+We will validate this approach using the \textbf{RCC-8 (Region Connection Calculus)} dataset.
+
+\subsection{Why RCC-8?}
+\begin{itemize}
+    \item \textbf{Compositional Logic:} RCC-8 is defined by a strict composition table (e.g., $TPP \circ TPP \to NTPP$). This makes it an ideal testbed to see if the model can learn "Virtual Compositions" (e.g., $TPP \circ \text{Virtual} \to \dots$).
+    \item \textbf{Long Chains:} The test set includes reasoning chains up to length $K=15$. Standard EpiGNNs struggle here. The augmentation should drastically reduce the effective path length (e.g., 15 hops $\to$ 8 hops), potentially improving accuracy on high-$K$ tasks.
+    \item \textbf{Branching Factor:} RCC-8 problems often involve multiple paths. The augmentation increases the graph density, so we must verify if this helps (more evidence) or hurts (more noise) in high-branching scenarios ($b=8$).
+\end{itemize}
+
+\section{Technical Implementation}
+
+\subsection{Algorithm: Sparse Matrix Multiplication}
+We use the property of Adjacency Matrices. If $A$ is the adjacency matrix, then $A^2$ contains non-zero entries exactly where a 2-hop path exists.
+
+\textbf{Pseudo-Code:}
+\begin{verbatim}
+def augment_graph(edge_index, num_nodes):
+    # 1. Create Sparse Tensor A from edge_index
+    A = SparseTensor(row=edge_index[0], col=edge_index[1], size=(N, N))
+    
+    # 2. Compute A^2 (Efficient Sparse MatMul)
+    A_sq = A @ A
+    
+    # 3. Extract indices (u, v) where A_sq[u, v] > 0
+    rows, cols, _ = A_sq.coo()
+    
+    # 4. Create new edges with Relation ID = MAX_RELATIONS + 1
+    new_edges = stack(rows, cols)
+    new_types = full(len(rows), VIRTUAL_ID)
+    
+    # 5. Concatenate with original graph
+    return cat(edge_index, new_edges), cat(edge_type, new_types)
+\end{verbatim}
+
+\section{Concrete Example}
+
+\textbf{Scenario:} A chain $A \xrightarrow{r_1} B \xrightarrow{r_2} C \xrightarrow{r_3} D$.
+
+\textbf{Original EpiGNN (Needs 3 Layers):}
+\begin{itemize}
+    \item L1: $A$ reaches $B$.
+    \item L2: $A$ reaches $C$ (via $B$).
+    \item L3: $A$ reaches $D$ (via $C$).
+\end{itemize}
+
+\textbf{Augmented EpiGNN (Needs 2 Layers):}
+\begin{itemize}
+    \item \textbf{Preprocessing:} We find $A \to C$ (via $B$) and $B \to D$ (via $C$). We add virtual edges $A \xrightarrow{v} C$ and $B \xrightarrow{v} D$.
+    \item \textbf{Layer 1:}
+        \item $A$ reaches $B$ (via $r_1$).
+        \item \textbf{$A$ reaches $C$ (via $v$)}.
+    \item \textbf{Layer 2:}
+        \item From $C$, the model sees $r_3$ to $D$.
+        \item It computes: $\text{State}(C) \circ r_3$.
+        \item Since $\text{State}(C)$ was found in L1, $A$ reaches $D$ in Layer 2!
+\end{itemize}
+
+\section{Request for Feedback}
+
+We seek constructive criticism on the following points before implementation:
+
+\begin{enumerate}
+    \item \textbf{Information Loss:} We are collapsing all 2-hop paths (e.g., "Father-Father" and "Brother-Sister") into a single `VIRTUAL_RELATION`. 
+    \begin{itemize}
+        \item \textit{Hypothesis:} The model's hidden state $\mathbf{h}$ carries the context, so the generic relation just acts as a "carrier" signal. Is this assumption sound?
+    \end{itemize}
+    
+    \item \textbf{Graph Density:} For dense graphs, $A^2$ could add many edges ($O(D^2)$ per node).
+    \begin{itemize}
+        \item \textit{Question:} Should we limit the number of virtual edges added (e.g., random sampling) to preserve memory?
+    \end{itemize}
+
+    \item \textbf{Inductive Bias:} Does adding these shortcuts disrupt the model's ability to learn the precise atomic rules (e.g., does it make it "lazy")?
+\end{enumerate}
+
+\end{document}

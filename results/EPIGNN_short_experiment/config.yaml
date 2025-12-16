@@ -1,0 +1,49 @@
+fix_ys: false
+shared: true
+dist: euclidean
+eval_mode: false
+use_mlp_classifier: false
+hidden_dim: 18
+num_layers: 5
+do_hyper_sweep: false
+num_hyper_runs: 10
+set_hidden_eq_num_relations: false
+turn_on_wandb: false
+wandb:
+  enabled: true
+  entity: irtaza
+  project: gnn-systematic-generalisation
+debug: false
+experiments:
+  exp_name: EPIGNN_short_experiment
+  epochs: 5
+  entropy_reg: 0.001
+  remove_not_chains: false
+  load_from_checkpoint: false
+  NBF_type: NBFdistR
+  schedule: step
+  final_noiseless_epochs: 1
+  dataset_type: rcc8
+  data_train_path: ../data/rcc8/train_rcc8.csv
+  just_discretize: false
+  eval_mode: true
+  is_y_prob_model: false
+  do_reg: false
+  lr: 0.01
+  fp_bp: true
+  facets: 8
+  hidden_dim: 32
+  fw_only: false
+  bw_only: false
+  use_margin_loss: true
+  num_negative_samples: 1
+  margin: 1.0
+  score_fn: xent
+  final_linear: false
+  outs_as_left_arg: false
+  batch_size: 128
+  seed: 42
+  aggr_type: min
+  ablate_probas: false
+  ablate_compose: false
+  test_only: false

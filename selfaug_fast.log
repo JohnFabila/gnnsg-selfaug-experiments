@@ -1,0 +1,50 @@
+nohup: ignoring input
+Random seed set as 42
+[2025-12-15 14:50:16,748][src.utils][INFO] - ======================================================================
+[2025-12-15 14:50:16,748][src.utils][INFO] - 🔧 2-HOP SELF-AUGMENTATION ENABLED
+[2025-12-15 14:50:16,748][src.utils][INFO] -    Graphs will be augmented with predicted 2-hop edges at test time
+[2025-12-15 14:50:16,748][src.utils][INFO] - ======================================================================
+[2025-12-15 14:50:16,748][src.utils][INFO] - preprocessed data file loaded from: ../data/rcc8/pickles/train_rcc8.csv_chains_False_fp_bp.pkl
+/scratch/john/projects/AllEPIGNN/gnnsg/src/utils.py:117: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(model_str)
+[2025-12-15 14:50:20,145][src.utils][INFO] - Loading SelfAug_Short_EPIGNN_model_epoch_4.pth from checkpoint.
+training time taken (seconds): 2.384185791015625e-07
+[2025-12-15 14:50:20,146][src.utils][INFO] - Loading SelfAug_Short_EPIGNN_model_epoch_4.pth from checkpoint.
+[2025-12-15 14:50:20,147][src.utils][INFO] - 
+======================================================================
+[2025-12-15 14:50:20,147][src.utils][INFO] - 🧪 Running tests with 2-hop self-augmentation...
+[2025-12-15 14:50:20,147][src.utils][INFO] - ======================================================================
+[2025-12-15 14:50:22,318][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 1): 1.0
+[2025-12-15 14:50:24,044][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 2): 0.99640625
+[2025-12-15 14:50:26,289][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 3): 0.98203125
+[2025-12-15 14:50:28,126][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 4): 0.96875
+[2025-12-15 14:50:58,791][src.utils][INFO] -   Augmented with avg 1.0 2-hop edges per query
+(3, 1): 1.0
+[2025-12-15 14:51:56,977][src.utils][INFO] -   Augmented with avg 2.0 2-hop edges per query
+(3, 2): 0.936875
+[2025-12-15 14:53:23,476][src.utils][INFO] -   Augmented with avg 3.0 2-hop edges per query
+(3, 3): 0.88765625
+[2025-12-15 14:55:17,856][src.utils][INFO] -   Augmented with avg 4.0 2-hop edges per query
+(3, 4): 0.8584375
+[2025-12-15 14:55:48,180][src.utils][INFO] -   Augmented with avg 1.0 2-hop edges per query
+(4, 1): 1.0
+[2025-12-15 14:56:46,973][src.utils][INFO] -   Augmented with avg 2.0 2-hop edges per query
+(4, 2): 0.9540625
+[2025-12-15 14:58:13,823][src.utils][INFO] -   Augmented with avg 3.0 2-hop edges per query
+(4, 3): 0.92734375
+[2025-12-15 15:00:08,093][src.utils][INFO] -   Augmented with avg 4.0 2-hop edges per query
+(4, 4): 0.9003125
+[2025-12-15 15:01:14,335][src.utils][INFO] -   Augmented with avg 2.3 2-hop edges per query
+(5, 1): 0.98140625
+[2025-12-15 15:03:22,972][src.utils][INFO] -   Augmented with avg 4.5 2-hop edges per query
+(5, 2): 0.90640625
+[2025-12-15 15:06:36,857][src.utils][INFO] -   Augmented with avg 6.8 2-hop edges per query
+(5, 3): 0.841875
+[2025-12-15 15:10:55,536][src.utils][INFO] -   Augmented with avg 9.0 2-hop edges per query
+(5, 4): 0.7846875
+{'(2, 1)': 1.0, '(2, 2)': 0.99640625, '(2, 3)': 0.98203125, '(2, 4)': 0.96875, '(3, 1)': 1.0, '(3, 2)': 0.936875, '(3, 3)': 0.88765625, '(3, 4)': 0.8584375, '(4, 1)': 1.0, '(4, 2)': 0.9540625, '(4, 3)': 0.92734375, '(4, 4)': 0.9003125, '(5, 1)': 0.98140625, '(5, 2)': 0.90640625, '(5, 3)': 0.841875, '(5, 4)': 0.7846875}
+inference time taken (seconds): 1235.3894846439362

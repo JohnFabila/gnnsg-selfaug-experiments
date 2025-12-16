@@ -1,0 +1,24 @@
+\subsection{Self-Augmentation with Confidence Thresholding}
+
+To address the performance degradation observed in the initial self-augmentation approach (Section~X), we introduce a confidence-based filtering mechanism. The key modifications to the experimental setting are:
+
+\begin{itemize}
+    \item \textbf{Confidence threshold}: Only predicted edges with model confidence $\geq 0.7$ are added to the graph
+    \item \textbf{Selective augmentation}: Low-confidence predictions (probability $< 0.7$) are rejected to avoid adding noisy edges
+    \item \textbf{Prediction filtering}: For each 2-hop candidate edge $(h,c)$, we compute:
+    \begin{equation}
+        p_{\text{max}} = \max_{r \in \mathcal{R}} P(r \mid h, c, \mathcal{G})
+    \end{equation}
+    where $\mathcal{R}$ is the set of RCC8 relations and $\mathcal{G}$ is the current graph state
+    \item \textbf{Edge addition criterion}: Edge $(h,c)$ with predicted label $r^* = \argmax_r P(r \mid h, c, \mathcal{G})$ is added only if $p_{\text{max}} \geq 0.7$
+    \item \textbf{Otherwise identical}: All other aspects remain the same as the original self-augmentation approach---same model (Short EPIGNN, 5 layers, 5 epochs), same 2-hop path identification, same bidirectional edge addition with inverse relations
+\end{itemize}
+
+This modification aims to prevent the model from adding incorrect shortcut edges that compound errors during reasoning, while preserving high-quality predictions that can genuinely assist compositional inference.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\textwidth]{results/SelfAug_Short_EPIGNN/SelfAug_Confidence_vs_Baselines_k2-6.pdf}
+    \caption{Comparison of Classical EPIGNN (15L, 40E), Short EPIGNN (5L, 5E), and Self-Augmentation with confidence threshold $\tau=0.7$ on RCC8 test queries. The confidence-filtered approach shows consistent improvements over the Short baseline, particularly for longer path lengths ($k \geq 5$).}
+    \label{fig:confidence_threshold}
+\end{figure}

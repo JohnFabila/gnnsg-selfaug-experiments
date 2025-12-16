@@ -1,0 +1,43 @@
+/scratch/john/venvs/py312/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/scratch/john/venvs/py312/lib/python3.12/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+Random seed set as 42
+[2025-12-16 00:55:58,856][src.utils][INFO] - ======================================================================
+[2025-12-16 00:55:58,856][src.utils][INFO] - 🔧 2-HOP SELF-AUGMENTATION ENABLED
+[2025-12-16 00:55:58,856][src.utils][INFO] -    Graphs will be augmented with predicted 2-hop edges at test time
+[2025-12-16 00:55:58,856][src.utils][INFO] - ======================================================================
+[2025-12-16 00:55:58,856][src.utils][INFO] - preprocessed data file loaded from: ../data/rcc8/pickles/train_rcc8.csv_chains_False_fp_bp.pkl
+[2025-12-16 00:56:02,267][src.utils][INFO] - Loading SelfAug_Short_EPIGNN_model_epoch_4.pth from checkpoint.
+training time taken (seconds): 2.384185791015625e-07
+[2025-12-16 00:56:02,270][src.utils][INFO] - Loading SelfAug_Short_EPIGNN_model_epoch_4.pth from checkpoint.
+[2025-12-16 00:56:02,271][src.utils][INFO] - 
+======================================================================
+[2025-12-16 00:56:02,271][src.utils][INFO] - 🧪 Running tests with 2-hop self-augmentation...
+[2025-12-16 00:56:02,271][src.utils][INFO] - ======================================================================
+[2025-12-16 01:01:02,850][src.utils][INFO] -   Augmented with avg 4.1 2-hop edges per query
+(5, 1): 0.98703125
+[2025-12-16 01:11:06,301][src.utils][INFO] -   Augmented with avg 7.7 2-hop edges per query
+(5, 2): 0.971875
+[2025-12-16 01:26:12,770][src.utils][INFO] -   Augmented with avg 11.4 2-hop edges per query
+(5, 3): 0.94828125
+[2025-12-16 01:46:15,904][src.utils][INFO] -   Augmented with avg 15.1 2-hop edges per query
+(5, 4): 0.93078125
+[2025-12-16 01:50:51,567][src.utils][INFO] -   Augmented with avg 3.7 2-hop edges per query
+(6, 1): 0.9934375
+[2025-12-16 02:00:02,705][src.utils][INFO] -   Augmented with avg 7.0 2-hop edges per query
+(6, 2): 0.97390625
+[2025-12-16 02:13:43,565][src.utils][INFO] -   Augmented with avg 10.3 2-hop edges per query
+(6, 3): 0.9478125
+[2025-12-16 02:31:56,190][src.utils][INFO] -   Augmented with avg 13.7 2-hop edges per query
+(6, 4): 0.92859375
+[2025-12-16 02:36:57,055][src.utils][INFO] -   Augmented with avg 4.1 2-hop edges per query
+(7, 1): 0.98765625
+[2025-12-16 02:47:03,580][src.utils][INFO] -   Augmented with avg 7.6 2-hop edges per query
+(7, 2): 0.9575
+[2025-12-16 03:02:01,851][src.utils][INFO] -   Augmented with avg 11.2 2-hop edges per query
+(7, 3): 0.92234375
+[2025-12-16 03:13:45,797][src.utils][INFO] -   Augmented with avg 15.0 2-hop edges per query
+(7, 4): 0.90515625
+{'(5, 1)': 0.98703125, '(5, 2)': 0.971875, '(5, 3)': 0.94828125, '(5, 4)': 0.93078125, '(6, 1)': 0.9934375, '(6, 2)': 0.97390625, '(6, 3)': 0.9478125, '(6, 4)': 0.92859375, '(7, 1)': 0.98765625, '(7, 2)': 0.9575, '(7, 3)': 0.92234375, '(7, 4)': 0.90515625}
+inference time taken (seconds): 8263.526442289352

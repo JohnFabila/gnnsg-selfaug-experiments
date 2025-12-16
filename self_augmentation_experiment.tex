@@ -1,0 +1,47 @@
+\subsection{Self-Augmentation Experiment}
+
+We explored a self-augmentation strategy to enhance the compositional reasoning capabilities of the Short EPIGNN model (5 layers, 5 epochs) without increasing model complexity. The approach consists of augmenting test graphs by predicting missing 2-hop edges using the trained model itself.
+
+\subsubsection{Method}
+
+For each query $(h, t)$ in the test set, we:
+\begin{enumerate}
+    \item Identify all 2-hop paths $h \xrightarrow{r_1} b \xrightarrow{r_2} c$ where $c \neq t$ and $(h,c)$ is not already in the graph
+    \item Use the trained model to predict the most likely relation label for each missing edge $(h,c)$
+    \item Add bidirectional edges $(h,c)$ and $(c,h)$ with the predicted label and its inverse
+    \item Perform inference on the augmented graph
+\end{enumerate}
+
+The hypothesis was that adding these predicted shortcut edges would help the model perform multi-hop reasoning more effectively, similar to how path consistency algorithms work in qualitative spatial reasoning.
+
+\subsubsection{Results}
+
+We evaluated this approach on RCC8 test configurations with path lengths $k \in \{2,3,4,5\}$ and base relation counts $b \in \{1,2,3,4\}$ (16 configurations total). Figure~\ref{fig:self_aug_comparison} compares the performance of Classical EPIGNN (15 layers, 40 epochs), Short EPIGNN (5 layers, 5 epochs), and Self-Augmentation across these configurations.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.95\textwidth]{results/SelfAug_Short_EPIGNN/SelfAug_vs_Baseline_k2-5.pdf}
+    \caption{Comparison of Classical EPIGNN, Short EPIGNN, and Self-Augmentation approaches on RCC8 test queries. The self-augmentation strategy shows consistent degradation compared to the Short EPIGNN baseline, particularly for $b \geq 2$.}
+    \label{fig:self_aug_comparison}
+\end{figure}
+
+The results show that self-augmentation \textbf{degrades performance} compared to the Short EPIGNN baseline:
+\begin{itemize}
+    \item \textbf{Average degradation:} $-3.41\%$ across all 16 configurations
+    \item \textbf{Worst case:} $(k=3, b=4)$ drops from $97.3\%$ to $85.8\%$ ($-11.5\%$)
+    \item \textbf{Pattern:} Performance degrades as $b$ increases, with minimal effect when $b=1$
+    \item \textbf{No improvements:} $0/16$ configurations showed improvement
+\end{itemize}
+
+For $k=2$, no edges were added (paths too short for 2-hop augmentation), resulting in identical performance. For $k \geq 3$ with $b=1$, augmentation had minimal impact as the model already achieves near-perfect accuracy. However, for more challenging configurations ($b \geq 2$), the augmentation consistently hurt performance, adding 1-9 predicted edges per query that introduced noise rather than helpful information.
+
+\subsubsection{Analysis}
+
+The failure of self-augmentation reveals an important limitation: the model's predictions for missing edges are not accurate enough to serve as reliable augmentation. Adding incorrect shortcut edges confuses the reasoning process rather than facilitating it. This suggests that:
+\begin{enumerate}
+    \item The model's edge-level predictions contain uncertainty that compounds when used for augmentation
+    \item Simply adding more edges (even predicted ones) does not improve compositional reasoning
+    \item Effective augmentation would require either ground-truth labels or significantly higher prediction confidence
+\end{enumerate}
+
+This negative result confirms that achieving better compositional reasoning requires genuine architectural improvements or training strategies rather than test-time augmentation with uncertain predictions.

@@ -1,0 +1,62 @@
+Random seed set as 42
+[2025-12-15 13:15:27,902][src.utils][INFO] - ======================================================================
+[2025-12-15 13:15:27,902][src.utils][INFO] - 🔧 2-HOP SELF-AUGMENTATION ENABLED
+[2025-12-15 13:15:27,902][src.utils][INFO] -    Graphs will be augmented with predicted 2-hop edges at test time
+[2025-12-15 13:15:27,902][src.utils][INFO] - ======================================================================
+[2025-12-15 13:15:27,902][src.utils][INFO] - preprocessed data file loaded from: ../data/rcc8/pickles/train_rcc8.csv_chains_False_fp_bp.pkl
+/scratch/john/projects/AllEPIGNN/gnnsg/src/utils.py:117: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(model_str)
+[2025-12-15 13:15:31,764][src.utils][INFO] - Loading SelfAug_Short_EPIGNN_model_epoch_4.pth from checkpoint.
+training time taken (seconds): 2.384185791015625e-07
+[2025-12-15 13:15:31,766][src.utils][INFO] - Loading SelfAug_Short_EPIGNN_model_epoch_4.pth from checkpoint.
+[2025-12-15 13:15:31,766][src.utils][INFO] - 
+======================================================================
+[2025-12-15 13:15:31,766][src.utils][INFO] - 🧪 Running tests with 2-hop self-augmentation...
+[2025-12-15 13:15:31,766][src.utils][INFO] - ======================================================================
+[2025-12-15 13:15:34,015][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 1): 1.0
+[2025-12-15 13:15:35,738][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 2): 0.99640625
+[2025-12-15 13:15:37,979][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 3): 0.98203125
+[2025-12-15 13:15:39,794][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 4): 0.96875
+[2025-12-15 13:15:42,141][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 5): 0.9584375
+[2025-12-15 13:15:44,529][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 6): 0.95109375
+[2025-12-15 13:15:46,502][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 7): 0.94921875
+[2025-12-15 13:15:49,011][src.utils][INFO] -   Augmented with avg 0.0 2-hop edges per query
+(2, 8): 0.941875
+Error executing job with overrides: ['experiments=fb_model_rcc8', 'num_layers=5', 'experiments.epochs=5', 'experiments.exp_name=SelfAug_Short_EPIGNN', 'experiments.use_2hop_augmentation=true', 'experiments.test_only=true']
+Traceback (most recent call last):
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/src/train.py", line 1136, in run
+    test_accs = get_test_metrics_augmented(data_train_path, unique_edge_labels, unique_query_labels,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/src/train.py", line 493, in get_test_metrics_augmented
+    test_acc = get_batched_test_out_augmented(dataset_test_loader, model, fp_bp, fw_only,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/src/train.py", line 534, in get_batched_test_out_augmented
+    augmented_data, num_added = augment_graph_2hop_predicted(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/src/train.py", line 790, in augment_graph_2hop_predicted
+    pred_label = predict_edge_label(
+                 ^^^^^^^^^^^^^^^^^^^
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/src/train.py", line 703, in predict_edge_label
+    logits, _ = model(query_data, fw_only=fw_only, bw_only=bw_only,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/src/model_nbf_fb.py", line 402, in forward
+    num_nodes = batch_fb['fw'].batch.shape[0],
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/scratch/john/projects/AllEPIGNN/gnnsg/venv/lib/python3.12/site-packages/torch_geometric/data/storage.py", line 96, in __getattr__
+    raise AttributeError(
+AttributeError: 'NodeStorage' object has no attribute 'batch'
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.
